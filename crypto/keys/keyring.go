@@ -87,6 +87,28 @@ func NewKeyring(
 	return newKeyringKeybase(db, opts...), nil
 }
 
+func NewKeyringWithPassphrase(
+	appName, backend, rootDir string, passphrase string, opts ...KeybaseOption,
+) (Keybase, error) {
+
+	var db keyring.Keyring
+	var err error
+
+	switch backend {
+	case BackendTest:
+		db, err = keyring.Open(lkbToKeyringConfig(appName, rootDir, nil, true))
+	case BackendFile:
+		db, err = keyring.Open(newFileBackendKeyringConfigWithPassphrase(appName, rootDir, passphrase))
+	default:
+		return nil, fmt.Errorf("unknown keyring backend %v", backend)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return newKeyringKeybase(db, opts...), nil
+}
+
 // CreateMnemonic generates a new key and persists it to storage, encrypted
 // using the provided password. It returns the generated mnemonic and the key Info.
 // An error is returned if it fails to generate a key for the given algo type,
@@ -532,6 +554,18 @@ func newFileBackendKeyringConfig(name, dir string, buf io.Reader) keyring.Config
 		ServiceName:      name,
 		FileDir:          fileDir,
 		FilePasswordFunc: newRealPrompt(fileDir, buf),
+	}
+}
+
+func newFileBackendKeyringConfigWithPassphrase(name, dir, passphrase string) keyring.Config {
+	fileDir := filepath.Join(dir, fmt.Sprintf(keyringDirNameFmt, name))
+	return keyring.Config{
+		AllowedBackends: []keyring.BackendType{keyring.FileBackend},
+		ServiceName:     name,
+		FileDir:         fileDir,
+		FilePasswordFunc: func(_ string) (string, error) {
+			return passphrase, nil
+		},
 	}
 }
 
