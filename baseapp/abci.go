@@ -459,7 +459,7 @@ func handleQueryCustom(app *BaseApp, path []string, req abci.RequestQuery) abci.
 	// []string{"proposal", "test"} as the path.
 	resBytes, err := querier(ctx, path[2:], req)
 	if err != nil {
-		space, code, log := sdkerrors.ABCIInfo(err, false)
+		space, code, log := sdkerrors.ABCIInfo(err, true)
 		return abci.ResponseQuery{
 			Code:      code,
 			Codespace: space,

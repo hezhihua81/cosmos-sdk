@@ -34,13 +34,13 @@ type MsgCreateValidator struct {
 }
 
 type msgCreateValidatorJSON struct {
-	Description       Description     `json:"description" yaml:"description"`
-	Commission        CommissionRates `json:"commission" yaml:"commission"`
-	MinSelfDelegation sdk.Int         `json:"min_self_delegation" yaml:"min_self_delegation"`
-	DelegatorAddress  sdk.AccAddress  `json:"delegator_address" yaml:"delegator_address"`
-	ValidatorAddress  sdk.ValAddress  `json:"validator_address" yaml:"validator_address"`
-	PubKey            string          `json:"pubkey" yaml:"pubkey"`
-	Value             sdk.Coin        `json:"value" yaml:"value"`
+	Description Description `json:"description" yaml:"description"`
+	//Commission        CommissionRates `json:"commission" yaml:"commission"`
+	MinSelfDelegation sdk.Int        `json:"min_self_delegation" yaml:"min_self_delegation"`
+	DelegatorAddress  sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
+	ValidatorAddress  sdk.ValAddress `json:"validator_address" yaml:"validator_address"`
+	PubKey            string         `json:"pubkey" yaml:"pubkey"`
+	Value             sdk.Coin       `json:"value" yaml:"value"`
 }
 
 // NewMsgCreateValidator creates a new MsgCreateValidator instance.
@@ -85,8 +85,8 @@ func (msg MsgCreateValidator) GetSigners() []sdk.AccAddress {
 // serialization of the MsgCreateValidator type.
 func (msg MsgCreateValidator) MarshalJSON() ([]byte, error) {
 	return json.Marshal(msgCreateValidatorJSON{
-		Description:       msg.Description,
-		Commission:        msg.Commission,
+		Description: msg.Description,
+		//Commission:        msg.Commission,
 		DelegatorAddress:  msg.DelegatorAddress,
 		ValidatorAddress:  msg.ValidatorAddress,
 		PubKey:            sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, msg.PubKey),
@@ -104,7 +104,7 @@ func (msg *MsgCreateValidator) UnmarshalJSON(bz []byte) error {
 	}
 
 	msg.Description = msgCreateValJSON.Description
-	msg.Commission = msgCreateValJSON.Commission
+	//msg.Commission = msgCreateValJSON.Commission
 	msg.DelegatorAddress = msgCreateValJSON.DelegatorAddress
 	msg.ValidatorAddress = msgCreateValJSON.ValidatorAddress
 	var err error
