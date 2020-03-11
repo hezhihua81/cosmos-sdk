@@ -1,9 +1,5 @@
 package types
 
-import (
-	"math/big"
-)
-
 // staking constants
 const (
 
@@ -23,7 +19,7 @@ const (
 )
 
 // PowerReduction is the amount of staking tokens required for 1 unit of consensus-engine power
-var PowerReduction = sdk.NewInt(1)
+var PowerReduction = NewInt(1)
 
 // TokensToConsensusPower - convert input tokens to potential consensus-engine power
 func TokensToConsensusPower(tokens Int) int64 {
