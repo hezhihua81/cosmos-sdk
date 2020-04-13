@@ -260,9 +260,9 @@ $ %s tx staking unbond cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 100s
 var (
 	defaultTokens                  = sdk.TokensFromConsensusPower(100)
 	defaultAmount                  = defaultTokens.String() + sdk.DefaultBondDenom
-	defaultCommissionRate          = "0.1"
-	defaultCommissionMaxRate       = "0.2"
-	defaultCommissionMaxChangeRate = "0.01"
+	defaultCommissionRate          = "0"
+	defaultCommissionMaxRate       = "0"
+	defaultCommissionMaxChangeRate = "0"
 	defaultMinSelfDelegation       = "1"
 )
 
@@ -284,13 +284,8 @@ func CreateValidatorMsgHelpers(ipDefault string) (fs *flag.FlagSet, nodeIDFlag, 
 
 	defaultsDesc = fmt.Sprintf(`
 	delegation amount:           %s
-	commission rate:             %s
-	commission max rate:         %s
-	commission max change rate:  %s
 	minimum self delegation:     %s
-`, defaultAmount, defaultCommissionRate,
-		defaultCommissionMaxRate, defaultCommissionMaxChangeRate,
-		defaultMinSelfDelegation)
+`, defaultAmount, defaultMinSelfDelegation)
 
 	return fsCreateValidator, FlagNodeID, FlagPubKey, FlagAmount, defaultsDesc
 }
@@ -328,6 +323,7 @@ func PrepareFlagsForTxCreateValidator(
 	if viper.GetString(FlagAmount) == "" {
 		viper.Set(FlagAmount, defaultAmount)
 	}
+
 	if viper.GetString(FlagCommissionRate) == "" {
 		viper.Set(FlagCommissionRate, defaultCommissionRate)
 	}
@@ -337,6 +333,7 @@ func PrepareFlagsForTxCreateValidator(
 	if viper.GetString(FlagCommissionMaxChangeRate) == "" {
 		viper.Set(FlagCommissionMaxChangeRate, defaultCommissionMaxChangeRate)
 	}
+
 	if viper.GetString(FlagMinSelfDelegation) == "" {
 		viper.Set(FlagMinSelfDelegation, defaultMinSelfDelegation)
 	}
