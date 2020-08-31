@@ -207,9 +207,18 @@ func (svd SigVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simul
 			return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidPubKey, "pubkey on account is not set")
 		}
 
+		// get accNum
+		genesis := ctx.BlockHeight() == 0
+		var accNum uint64
+		if !genesis {
+			accNum = signerAccs[i].GetAccountNumber()
+		}
+
 		// verify signature
 		if !simulate && !pubKey.VerifyBytes(signBytes, sig) {
-			return ctx, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "signature verification failed; verify correct account sequence and chain-id")
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized,
+				"signature verification failed; verify correct account sequence and chain-id; %s acct %s, accnum %d, seq %d",
+				signerAccs[i].GetAddress(), ctx.ChainID(), accNum, signerAccs[i].GetSequence())
 		}
 	}
 
