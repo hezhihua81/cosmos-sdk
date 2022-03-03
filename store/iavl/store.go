@@ -6,6 +6,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/armon/go-metrics"
 	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/iavl"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -177,20 +178,20 @@ func (st *Store) Set(key, value []byte) {
 
 // Implements types.KVStore.
 func (st *Store) Get(key []byte) []byte {
-	defer telemetry.MeasureSince(time.Now(), "store", "iavl", "get")
+	defer telemetry.MeasureStoreSince(time.Now(), metrics.Label{Name: "key", Value: string(key)}, "store", "iavl", "get")
 	_, value := st.tree.Get(key)
 	return value
 }
 
 // Implements types.KVStore.
 func (st *Store) Has(key []byte) (exists bool) {
-	defer telemetry.MeasureSince(time.Now(), "store", "iavl", "has")
+	defer telemetry.MeasureStoreSince(time.Now(), metrics.Label{Name: "key", Value: string(key)}, "store", "iavl", "has")
 	return st.tree.Has(key)
 }
 
 // Implements types.KVStore.
 func (st *Store) Delete(key []byte) {
-	defer telemetry.MeasureSince(time.Now(), "store", "iavl", "delete")
+	defer telemetry.MeasureStoreSince(time.Now(), metrics.Label{Name: "key", Value: string(key)}, "store", "iavl", "delete")
 	st.tree.Remove(key)
 }
 
