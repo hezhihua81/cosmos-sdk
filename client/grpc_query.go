@@ -83,7 +83,7 @@ func (ctx Context) Invoke(grpcCtx gocontext.Context, method string, req, reply i
 	defer telemetry.MeasureStoreSince(time.Now(), metrics.Label{
 		Name:  "method",
 		Value: method,
-	}, "query", "abci", "grpc")
+	}, "abci", "query")
 
 	res, err := ctx.QueryABCI(abciReq)
 	if err != nil {
