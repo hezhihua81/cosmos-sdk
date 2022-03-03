@@ -69,3 +69,10 @@ func SetGaugeWithLabels(keys []string, val float32, labels []metrics.Label) {
 func MeasureSince(start time.Time, keys ...string) {
 	metrics.MeasureSinceWithLabels(keys, start.UTC(), globalLabels)
 }
+
+func MeasureStoreSince(start time.Time, label metrics.Label, keys ...string) {
+	var l []metrics.Label
+	l = append(l, globalLabels...)
+	l = append(l, label)
+	metrics.MeasureSinceWithLabels(keys, start.UTC(), l)
+}
