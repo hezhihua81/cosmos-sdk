@@ -88,7 +88,6 @@ func New(cfg Config) (*Metrics, error) {
 	metricsConf := metrics.DefaultConfig(cfg.ServiceName)
 	metricsConf.EnableHostname = cfg.EnableHostname
 	metricsConf.EnableHostnameLabel = cfg.EnableHostnameLabel
-	metricsConf.EnableServiceLabel = true
 
 	memSink := metrics.NewInmemSink(10*time.Second, time.Minute)
 	metrics.DefaultInmemSignal(memSink)
