@@ -3,11 +3,12 @@ package client
 import (
 	gocontext "context"
 	"fmt"
-	"github.com/celer-network/goutils/log"
 	"reflect"
 	"strconv"
 	"time"
 
+	"github.com/armon/go-metrics"
+	"github.com/celer-network/goutils/log"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	abci "github.com/tendermint/tendermint/abci/types"
