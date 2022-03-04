@@ -7,10 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/armon/go-metrics"
-	"github.com/celer-network/goutils/log"
-	"github.com/cosmos/cosmos-sdk/telemetry"
 	gogogrpc "github.com/gogo/protobuf/grpc"
+	"github.com/prometheus/client_golang/prometheus"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
@@ -26,6 +24,14 @@ import (
 var _ gogogrpc.ClientConn = Context{}
 
 var protoCodec = encoding.GetCodec(proto.Name)
+
+var GrpcHistogram = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+	Name:    "gateway_query_sgn_grpc_histogram",
+	Help:    "gateway query sgn grpc histogram",
+	Buckets: prometheus.ExponentialBuckets(0.001, 10, 5),
+},
+	[]string{"method"},
+)
 
 // Invoke implements the grpc ClientConn.Invoke method
 func (ctx Context) Invoke(grpcCtx gocontext.Context, method string, req, reply interface{}, opts ...grpc.CallOption) (err error) {
@@ -81,11 +87,8 @@ func (ctx Context) Invoke(grpcCtx gocontext.Context, method string, req, reply i
 		Data:   reqBz,
 		Height: ctx.Height,
 	}
-	log.Infoln("grpc invoked, ", method)
-	defer telemetry.MeasureStoreSince(time.Now(), metrics.Label{
-		Name:  "method",
-		Value: method,
-	}, "abci", "query")
+
+	defer observeInvokeSince(time.Now(), method)
 
 	res, err := ctx.QueryABCI(abciReq)
 	if err != nil {
@@ -122,4 +125,8 @@ func (ctx Context) Invoke(grpcCtx gocontext.Context, method string, req, reply i
 // NewStream implements the grpc ClientConn.NewStream method
 func (Context) NewStream(gocontext.Context, *grpc.StreamDesc, string, ...grpc.CallOption) (grpc.ClientStream, error) {
 	return nil, fmt.Errorf("streaming rpc not supported")
+}
+
+func observeInvokeSince(start time.Time, method string) {
+	GrpcHistogram.WithLabelValues(method).Observe(time.Since(start).Seconds())
 }
