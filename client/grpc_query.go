@@ -3,11 +3,11 @@ package client
 import (
 	gocontext "context"
 	"fmt"
+	"github.com/celer-network/goutils/log"
 	"reflect"
 	"strconv"
 	"time"
 
-	"github.com/armon/go-metrics"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -80,6 +80,7 @@ func (ctx Context) Invoke(grpcCtx gocontext.Context, method string, req, reply i
 		Data:   reqBz,
 		Height: ctx.Height,
 	}
+	log.Infoln("grpc invoked, ", method)
 	defer telemetry.MeasureStoreSince(time.Now(), metrics.Label{
 		Name:  "method",
 		Value: method,
