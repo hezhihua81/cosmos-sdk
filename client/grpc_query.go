@@ -5,7 +5,11 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"time"
 
+	"github.com/armon/go-metrics"
+	"github.com/celer-network/goutils/log"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"google.golang.org/grpc"
@@ -77,6 +81,11 @@ func (ctx Context) Invoke(grpcCtx gocontext.Context, method string, req, reply i
 		Data:   reqBz,
 		Height: ctx.Height,
 	}
+	log.Infoln("grpc invoked, ", method)
+	defer telemetry.MeasureStoreSince(time.Now(), metrics.Label{
+		Name:  "method",
+		Value: method,
+	}, "abci", "query")
 
 	res, err := ctx.QueryABCI(abciReq)
 	if err != nil {
